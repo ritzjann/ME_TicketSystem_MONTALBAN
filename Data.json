@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "visitor_name": "Maria Santos",
+    "purpose": "Submit scholarship documents",
+    "person_to_visit": "Registrar's Office",
+    "date": "2026-10-12",
+    "status": "Inside"
+  },
+  {
+    "id": 2,
+    "visitor_name": "Vincent Ompad",
+    "purpose": "Submit scholarship documents",
+    "person_to_visit": "Registrar's Office",
+    "date": "2026-10-12",
+    "status": "Inside"
+  }
+
+
+]

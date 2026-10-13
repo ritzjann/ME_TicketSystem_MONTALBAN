@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Campus Visitor Log</title>
+</head>
+<body>
+  <h1>Campus Visitor Log</h1>
+
+  <h2>Add Visitor</h2>
+  <input id="name" placeholder="Visitor name">
+  <input id="purpose" placeholder="Purpose">
+  <input id="person" placeholder="Person to visit">
+  <input id="date" type="date">
+  <button onclick="addVisitor()">Add</button>
+
+  <h2>Find by ID</h2>
+  <input id="searchId" type="number" placeholder="ID">
+  <button onclick="findVisitor()">Find</button>
+  <p id="result"></p>
+
+  <h2>All Visitors</h2>
+  <table border="1" cellpadding="5">
+    <thead>
+      <tr><th>ID</th><th>Name</th><th>Purpose</th><th>Person to Visit</th><th>Date</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody id="list"></tbody>
+  </table>
+
+  <script>
+    async function loadVisitors() {
+      const res = await fetch("/api/visitors");
+      const visitors = await res.json();
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+      for (const v of visitors) {
+        const row = list.insertRow();
+        [v.id, v.visitor_name, v.purpose, v.person_to_visit, v.date, v.status].forEach((text) => {
+          row.insertCell().textContent = text;
+        });
+        const btn = document.createElement("button");
+        btn.textContent = "Delete";
+        btn.onclick = () => deleteVisitor(v.id);
+        row.insertCell().appendChild(btn);
+      }
+    }
+
+    async function addVisitor() {
+      const res = await fetch("/api/visitors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          visitor_name: document.getElementById("name").value,
+          purpose: document.getElementById("purpose").value,
+          person_to_visit: document.getElementById("person").value,
+          date: document.getElementById("date").value
+        })
+      });
+      if (!res.ok) return alert((await res.json()).error);
+      ["name", "purpose", "person", "date"].forEach((id) => (document.getElementById(id).value = ""));
+      loadVisitors();
+    }
+
+    async function findVisitor() {
+      const id = document.getElementById("searchId").value;
+      const res = await fetch("/api/visitors/" + id);
+      const data = await res.json();
+      document.getElementById("result").textContent = res.ok
+        ? `#${data.id} - ${data.visitor_name} - ${data.purpose} - ${data.person_to_visit} - ${data.date} - ${data.status}`
+        : data.error;
+    }
+
+    async function deleteVisitor(id) {
+      await fetch("/api/visitors/" + id, { method: "DELETE" });
+      loadVisitors();
+    }
+
+    loadVisitors();
+  </script>
+</body>
+</html>
